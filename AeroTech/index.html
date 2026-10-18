@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroTech - Bienvenue</title>
+  <!-- Lien vers le fichier CSS -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="hero-body">
+  
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  
+  <div class="hero-content">
+    <span class="badge">Encyclopédie Aéronautique</span>
+    <h1>L'Univers de l'Aviation Globale</h1>
+    <p>
+      Plongez au cœur du monde aéronautique mondial. Des chasseurs militaires de pointe aux appareils commerciaux, découvrez les fiches techniques des plus grands appareils.
+    </p>
+    <a href="app.html" class="btn-main">
+      Accéder au catalogue <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <script>
+    const bodyEl = document.body;
+    const heroBg = document.getElementById('hero-bg');
+
+    bodyEl.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      const moveX = (clientX / innerWidth - 0.5) * 25;
+      const moveY = (clientY / innerHeight - 0.5) * 25;
+      heroBg.style.transform = `scale(1.08) translate(${moveX}px, ${moveY}px)`;
+    });
+
+    bodyEl.addEventListener('mouseleave', () => {
+      heroBg.style.transform = 'scale(1) translate(0px, 0px)';
+    });
+  </script>
+</body>
+</html>
