@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroTech - Détails de l'appareil</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="detail-body">
+
+  <!-- En-tête avec bouton retour -->
+  <header class="catalog-header">
+    <div class="logo-area">
+      <a href="app.html" class="btn-main" style="padding: 8px 15px; font-size: 0.9rem;">
+        <i class="fa-solid fa-arrow-left"></i> Retour au catalogue
+      </a>
+    </div>
+    <div class="search-admin-area">
+      <span class="brand-name" style="font-size: 1.2rem; font-weight: bold;">
+        <i class="fa-solid fa-plane-up"></i> AeroTech
+      </span>
+    </div>
+  </header>
+
+  <main class="detail-container" id="detail-main-content">
+    <!-- Le contenu sera injecté dynamiquement ici par JavaScript -->
+    <div style="text-align: center; padding: 50px; color: white;">
+      <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+      <p>Chargement des détails de l'appareil...</p>
+    </div>
+  </main>
+
+  <!-- Script Firebase et logique dynamique -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9z1PQMyrz2_t3_weFQ2d1W-LBQsnaQak",
+      authDomain: "aerotech-d1e11.firebaseapp.com",
+      projectId: "aerotech-d1e11",
+      storageBucket: "aerotech-d1e11.firebasestorage.app",
+      messagingSenderId: "404962146166",
+      appId: "1:404962146166:web:d27d39f7d5dbef03d86c57",
+      measurementId: "G-C85193Y7BJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Récupérer l'ID de l'appareil depuis l'URL (ex: detail.html?id=XYZ123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const planeId = urlParams.get('id');
+
+    async function loadPlaneDetails() {
+      const container = document.getElementById('detail-main-content');
+
+      if (!planeId) {
+        container.innerHTML = `<p style="text-align:center; color:white; padding:50px;">Aucun appareil spécifié.</p>`;
+        return;
+      }
+
+      try {
+        // Utilisation de la collection "planes" pour correspondre à ton script.js et admin.html
+        const docRef = doc(db, "planes", planeId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const plane = docSnap.data();
+
+          // Injection dynamique des données dans le HTML
+          container.innerHTML = `
+            <div class="detail-hero">
+              <img src="${plane.image || 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1200&auto=format&fit=crop'}" alt="${plane.name}">
+              <div class="detail-hero-overlay"></div>
+              <div class="detail-hero-content">
+                <span class="badge">${plane.constructor || plane.category || 'Aéronef'}</span>
+                <h1>${plane.name}</h1>
+                <p>${plane.airline ? 'Compagnie : ' + plane.airline : (plane.category ? 'Catégorie : ' + plane.category : '')}</p>
+              </div>
+            </div>
+
+            <div class="specs-section">
+              <h2><i class="fa-solid fa-clipboard-list"></i> Fiche Technique</h2>
+              
+              <div class="specs-grid">
+                <div class="spec-card">
+                  <i class="fa-solid fa-gauge-high spec-icon"></i>
+                  <h4>Vitesse Max</h4>
+                  <p>${plane.speed || 'N/C'}</p>
+                </div>
+                <div class="spec-card">
+                  <i class="fa-solid fa-arrows-left-right spec-icon"></i>
+                  <h4>Envergure</h4>
+                  <p>${plane.wingspan || 'N/C'}</p>
+                </div>
+                <div class="spec-card">
+                  <i class="fa-solid fa-jet-fighter-up spec-icon"></i>
+                  <h4>Motorisation</h4>
+                  <p>${plane.engine || 'N/C'}</p>
+                </div>
+                <div class="spec-card">
+                  <i class="fa-solid fa-calendar-days spec-icon"></i>
+                  <h4>Premier vol</h4>
+                  <p>${plane.flight || 'N/C'}</p>
+                </div>
+              </div>
+
+              <div class="detail-description">
+                <h3>À propos de cet appareil</h3>
+                <p>${plane.description || 'Aucune description détaillée disponible.'}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `<p style="text-align:center; color:white; padding:50px;">Appareil introuvable dans la base de données.</p>`;
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement :", error);
+        container.innerHTML = `<p style="text-align:center; color:white; padding:50px;">Erreur de chargement des données.</p>`;
+      }
+    }
+
+    loadPlaneDetails();
+  </script>
+
+</body>
+</html>
